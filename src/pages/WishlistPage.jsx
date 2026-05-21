@@ -1,34 +1,57 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingCart, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2, ShoppingBag, Star, Sparkles } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
-import { Star } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function WishlistPage() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const { addToCart, isInCart } = useCart();
 
+  const handleAddAllToCart = () => {
+    if (wishlistItems.length === 0) return;
+    wishlistItems.forEach(item => {
+      addToCart(item);
+    });
+    toast.success('All items added to your cart! 🛒', {
+      style: { background: '#0b0b14', color: '#f3f4f6', border: '1px solid rgba(16,185,129,0.2)' }
+    });
+  };
+
   if (wishlistItems.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-20" style={{ background: 'var(--bg-primary)' }}>
+      <div className="min-h-screen pt-28 pb-20 relative overflow-hidden flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+        {/* Backdrop aurora lights */}
+        <div className="aurora-bg">
+          <div className="aurora-blob aurora-1" />
+          <div className="aurora-blob aurora-2" />
+        </div>
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="text-center space-y-6 max-w-md px-6 relative z-10"
         >
-          <div className="text-8xl mb-6">💔</div>
-          <h2 className="text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)', fontFamily: 'Playfair Display, serif' }}>
-            Your Wishlist is Empty
-          </h2>
-          <p className="text-base mb-8" style={{ color: 'var(--text-secondary)' }}>
-            Save your favourite books to come back to them later!
-          </p>
-          <Link to="/products">
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="btn-primary text-base px-10 py-4">
+          <div className="text-7xl select-none animate-bounce duration-[3000ms]">💔</div>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-sans)' }}>
+              Wishlist is Empty
+            </h2>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              Your collection is waiting to be filled. Save books that spark your curiosity and explore them later.
+            </p>
+          </div>
+          
+          <Link to="/products" className="inline-block pt-2">
+            <motion.button 
+              whileHover={{ scale: 1.02 }} 
+              whileTap={{ scale: 0.98 }} 
+              className="btn-lux px-8 py-3.5 text-xs tracking-wider uppercase font-bold cursor-pointer"
+            >
               <span className="flex items-center gap-2">
-                <ShoppingBag size={18} />
-                Find Books to Save
+                <ShoppingBag size={15} />
+                Discover Masterpieces
               </span>
             </motion.button>
           </Link>
@@ -38,29 +61,44 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16" style={{ background: 'var(--bg-primary)' }}>
-      <div className="container-main">
-        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+    <div className="min-h-screen pt-28 pb-20 relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
+      {/* Drifting auroras for premium depth */}
+      <div className="aurora-bg">
+        <div className="aurora-blob aurora-1" />
+        <div className="aurora-blob aurora-2" />
+        <div className="aurora-blob aurora-3" />
+      </div>
+
+      <div className="container-main max-w-[1400px] relative z-10">
+        {/* Top Header Row */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b" style={{ borderColor: 'var(--border-color)' }}>
           <div>
-            <h1 className="section-title text-3xl" style={{ color: 'var(--text-primary)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="badge badge-purple flex items-center gap-1">
+                <Heart size={10} className="fill-current text-pink-500" /> Curated Shelf
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
               My Wishlist
             </h1>
-            <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>
-              <span className="font-semibold" style={{ color: '#ec4899' }}>{wishlistItems.length} books</span> saved
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+              You have <span className="font-extrabold text-[var(--accent-pink)]">{wishlistItems.length} publications</span> reserved
             </p>
           </div>
-          <button
-            onClick={() => wishlistItems.forEach(item => { addToCart(item); })}
-            className="btn-primary"
+          
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleAddAllToCart}
+            className="btn-lux flex items-center gap-2 text-xs tracking-wider uppercase font-bold py-3 px-6 cursor-pointer"
           >
-            <span className="flex items-center gap-2">
-              <ShoppingCart size={16} />
-              Add All to Cart
-            </span>
-          </button>
+            <ShoppingCart size={14} />
+            Add All to Cart
+          </motion.button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Saved Books Grid Shelf */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <AnimatePresence>
             {wishlistItems.map((book, i) => (
               <motion.div
@@ -68,70 +106,89 @@ export default function WishlistPage() {
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="glass-card overflow-hidden group"
+                className="glass-card overflow-hidden group flex flex-col justify-between"
               >
-                <div className="flex gap-4 p-4">
-                  {/* Cover */}
-                  <Link to={`/product/${book.id}`} className="shrink-0">
-                    <div className="w-20 h-28 rounded-xl overflow-hidden">
-                      <img src={book.cover} alt={book.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={e => { e.target.src = 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=80&h=112&fit=crop'; }} />
+                {/* Book Card Core Body */}
+                <div className="p-4 space-y-4">
+                  {/* Aspect Lock Cover image grid */}
+                  <Link to={`/product/${book.id}`} className="block relative overflow-hidden rounded-2xl aspect-[3/4] border" style={{ borderColor: 'var(--border-color)' }}>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end p-4">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-white bg-[var(--accent-indigo)] px-2.5 py-1 rounded-full shadow-lg">
+                        Quick Details
+                      </span>
                     </div>
+                    <img 
+                      src={book.cover} 
+                      alt={book.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={e => { e.target.src = 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=200&h=280&fit=crop'; }} 
+                    />
                   </Link>
 
-                  <div className="flex-1 min-w-0">
-                    <span className="badge badge-purple mb-2 inline-block" style={{ fontSize: '0.65rem' }}>{book.genre}</span>
+                  {/* Metadata and Rating */}
+                  <div className="space-y-1.5 text-left">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[9px] font-black uppercase tracking-wider text-[var(--accent-purple)] bg-[rgba(99,102,241,0.08)] border border-[rgba(99,102,241,0.15)] px-2 py-0.5 rounded-md">
+                        {book.genre}
+                      </span>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <Star size={10} fill="#f59e0b" style={{ color: '#f59e0b' }} />
+                        <span className="text-[10px] font-bold" style={{ color: 'var(--text-secondary)' }}>{book.rating}</span>
+                      </div>
+                    </div>
+
                     <Link to={`/product/${book.id}`}>
-                      <h3 className="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors line-clamp-2"
+                      <h3 className="font-extrabold text-sm leading-snug hover:text-[var(--accent-indigo)] transition-colors line-clamp-2"
                         style={{ color: 'var(--text-primary)' }}>
                         {book.title}
                       </h3>
                     </Link>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>by {book.author}</p>
-
-                    <div className="flex items-center gap-1 mt-1">
-                      {[1,2,3,4,5].map(s => (
-                        <Star key={s} size={10} fill={s <= Math.floor(book.rating) ? '#f59e0b' : 'none'}
-                          style={{ color: '#f59e0b' }} />
-                      ))}
-                      <span className="text-xs ml-1" style={{ color: 'var(--text-secondary)' }}>{book.rating}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="font-bold" style={{ color: 'var(--text-primary)' }}>₹{book.price}</span>
-                      <span className="text-xs line-through" style={{ color: 'var(--text-secondary)' }}>₹{book.mrp}</span>
-                      <span className="discount-badge">{book.discount}%</span>
-                    </div>
+                    <p className="text-[10px] font-semibold" style={{ color: 'var(--text-secondary)' }}>by {book.author}</p>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2 px-4 pb-4">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => addToCart(book)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold"
-                    style={{
-                      background: isInCart(book.id) ? 'rgba(108,59,213,0.3)' : 'linear-gradient(135deg, #6c3bd5, #8b5cf6)',
-                      color: 'white',
-                    }}
-                  >
-                    <ShoppingCart size={14} />
-                    {isInCart(book.id) ? 'In Cart' : 'Add to Cart'}
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => removeFromWishlist(book.id)}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }}
-                  >
-                    <Trash2 size={14} />
-                  </motion.button>
+                {/* Price tag & Interactive buying button shelf */}
+                <div className="px-4 pb-4 space-y-3">
+                  <div className="flex items-baseline gap-2 border-t pt-3" style={{ borderColor: 'var(--border-color)' }}>
+                    <span className="font-black text-base" style={{ color: 'var(--text-primary)' }}>₹{book.price}</span>
+                    <span className="text-[10px] line-through font-semibold" style={{ color: 'var(--text-secondary)' }}>₹{book.mrp}</span>
+                    <span className="text-[9px] font-extrabold text-[var(--accent-gold)] bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.2)] px-1.5 py-0.5 rounded">
+                      {book.discount}% OFF
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => addToCart(book)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer"
+                      style={{
+                        background: isInCart(book.id) ? 'rgba(99,102,241,0.06)' : 'linear-gradient(135deg, var(--accent-indigo), var(--accent-purple))',
+                        color: isInCart(book.id) ? 'var(--accent-indigo)' : 'white',
+                        borderColor: isInCart(book.id) ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      <ShoppingCart size={13} />
+                      {isInCart(book.id) ? 'In Basket' : 'Add to Cart'}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        removeFromWishlist(book.id);
+                        toast.success('Removed from wishlist.', {
+                          style: { background: '#0b0b14', color: '#f3f4f6', border: '1px solid rgba(239,68,68,0.15)' }
+                        });
+                      }}
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all cursor-pointer bg-[rgba(239,68,68,0.05)] border-[rgba(239,68,68,0.15)] hover:bg-[rgba(239,68,68,0.12)] hover:border-[rgba(239,68,68,0.25)] text-red-400"
+                    >
+                      <Trash2 size={13} />
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
             ))}

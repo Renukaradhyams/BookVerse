@@ -1,394 +1,355 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Star, TrendingUp, BookOpen } from 'lucide-react';
-
-const floatingBooks = [
-  { color: '#6c3bd5', angle: -20, delay: 0, scale: 0.9 },
-  { color: '#f59e0b', angle: 0, delay: 0.5, scale: 1 },
-  { color: '#ec4899', angle: 20, delay: 1, scale: 0.85 },
-];
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { Sparkles, ArrowRight, Star, TrendingUp, BookOpen, Truck, ShieldCheck, Percent } from 'lucide-react';
 
 function ParticleSystem() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 30 }).map((_, i) => (
-        <div
-          key={i}
-          className="particle"
-          style={{
-            left: `${Math.random() * 100}%`,
-            width: `${Math.random() * 4 + 1}px`,
-            height: `${Math.random() * 4 + 1}px`,
-            background: i % 3 === 0 ? '#6c3bd5' : i % 3 === 1 ? '#f59e0b' : '#ec4899',
-            opacity: Math.random() * 0.5 + 0.1,
-            animationDuration: `${Math.random() * 15 + 8}s`,
-            animationDelay: `${Math.random() * 8}s`,
-            bottom: '-10px',
-          }}
-        />
-      ))}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {Array.from({ length: 25 }).map((_, i) => {
+        const size = Math.random() * 4 + 1.5;
+        const dur = Math.random() * 12 + 10;
+        const delay = Math.random() * 6;
+        return (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: '-20px',
+              width: `${size}px`,
+              height: `${size}px`,
+              background: i % 3 === 0 ? 'rgba(99, 102, 241, 0.4)' : i % 3 === 1 ? 'rgba(245, 158, 11, 0.3)' : 'rgba(236, 72, 153, 0.35)',
+              opacity: Math.random() * 0.4 + 0.15,
+              animation: `float-up ${dur}s linear ${delay}s infinite`,
+            }}
+          />
+        );
+      })}
+      <style>{`
+        @keyframes float-up {
+          0% { transform: translateY(0) scale(1) translateX(0); opacity: 0; }
+          15% { opacity: 0.6; }
+          90% { opacity: 0.3; }
+          100% { transform: translateY(-110vh) scale(0.6) translateX(40px); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
 
-function Book3D({ color, angle, delay, scale, title, cover }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 60, rotate: angle - 10 }}
-      animate={{ opacity: 1, y: 0, rotate: angle }}
-      transition={{ delay: delay + 0.8, duration: 0.8, ease: 'easeOut' }}
-      style={{
-        transformStyle: 'preserve-3d',
-        perspective: '1000px',
-        position: 'absolute',
-        transform: `rotate(${angle}deg) scale(${scale})`,
-        animation: `floatSlow ${4 + delay}s ease-in-out ${delay}s infinite`,
-      }}
-    >
-      <div
-        className="rounded-xl overflow-hidden shadow-2xl"
-        style={{
-          width: '120px',
-          height: '170px',
-          boxShadow: `0 25px 60px ${color}60, 0 0 0 1px ${color}30`,
-          position: 'relative',
-        }}
-      >
-        {cover ? (
-          <img src={cover} alt={title} className="w-full h-full object-cover" />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${color}aa, ${color}44)` }}
-          >
-            <BookOpen size={40} className="text-white opacity-60" />
-          </div>
-        )}
-        {/* Book spine effect */}
-        <div
-          className="absolute left-0 top-0 bottom-0 w-4"
-          style={{ background: `${color}99`, borderRight: `1px solid ${color}40` }}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Hero() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
+  // Parallax mouse movements
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const springConfig = { damping: 25, stiffness: 120 };
+  const rotateX = useSpring(useTransform(y, [-300, 300], [15, -15]), springConfig);
+  const rotateY = useSpring(useTransform(x, [-300, 300], [-15, 15]), springConfig);
+  
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left - width / 2;
+    const mouseY = e.clientY - rect.top - height / 2;
+    x.set(mouseX);
+    y.set(mouseY);
+  };
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   const bookCovers = [
-    { color: '#6c3bd5', cover: '/books/atomic_habits.png', angle: -18, delay: 0.3, scale: 0.88 },
-    { color: '#f59e0b', cover: '/books/psychology_money.png', angle: 0, delay: 0, scale: 1.05 },
-    { color: '#ec4899', cover: '/books/harry_potter.png', angle: 18, delay: 0.6, scale: 0.9 },
+    { 
+      id: 1,
+      color: '#6366f1', 
+      cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80', 
+      angle: -15, 
+      delay: 0.1, 
+      scale: 0.88,
+      title: "Atomic Habits",
+      author: "James Clear",
+      price: "₹499",
+      offset: "-55px"
+    },
+    { 
+      id: 3,
+      color: '#f59e0b', 
+      cover: 'https://images.unsplash.com/photo-1618666012174-83b441c0bc76?w=400&auto=format&fit=crop&q=80', 
+      angle: 0, 
+      delay: 0, 
+      scale: 1.05,
+      title: "The Psychology of Money",
+      author: "Morgan Housel",
+      price: "₹449",
+      offset: "0px"
+    },
+    { 
+      id: 5,
+      color: '#ec4899', 
+      cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&auto=format&fit=crop&q=80', 
+      angle: 15, 
+      delay: 0.2, 
+      scale: 0.92,
+      title: "Clean Code",
+      author: "Robert C. Martin",
+      price: "₹799",
+      offset: "55px"
+    },
   ];
 
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden"
-      style={{
-        background: 'var(--bg-primary)',
-        paddingTop: '80px',
-      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[92vh] lg:min-h-screen flex items-center overflow-hidden pt-24 pb-16 lg:py-0"
+      style={{ background: 'var(--bg-primary)' }}
     >
-      {/* Gradient Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: '600px', height: '600px',
-            background: 'radial-gradient(circle, rgba(108,59,213,0.2) 0%, transparent 70%)',
-            top: '-100px', left: '-100px',
-          }}
-        />
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: '500px', height: '500px',
-            background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)',
-            bottom: '-100px', right: '-100px',
-          }}
-        />
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: '400px', height: '400px',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)',
-            top: '40%', right: '30%',
-          }}
-        />
+      {/* Background Animated Aurora Lights */}
+      <div className="aurora-bg">
+        <div className="aurora-blob aurora-1" />
+        <div className="aurora-blob aurora-2" />
+        <div className="aurora-blob aurora-3" />
       </div>
 
-      <ParticleSystem />
-
-      {/* Grid pattern overlay */}
+      {/* Grid Mesh Overlay */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-5"
+        className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.06]"
         style={{
-          backgroundImage: `linear-gradient(rgba(108,59,213,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(108,59,213,0.3) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
+          backgroundImage: `linear-gradient(rgba(99, 102, 241, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.25) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px',
         }}
       />
 
+      <ParticleSystem />
+
       <div className="container-main relative z-10 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
-          {/* Left Content */}
-          <div>
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center min-h-[80vh]">
+          
+          {/* Left Column: Premium Typographic Text */}
+          <div className="lg:col-span-7 flex flex-col justify-center text-left">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="flex items-center gap-2 mb-6"
+              className="flex flex-wrap items-center gap-2 mb-6"
             >
-              <span className="badge badge-purple">
-                <Sparkles size={12} />
-                India's #1 Online Bookstore
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/15">
+                <Sparkles size={11} className="text-amber-400 animate-spin" style={{ animationDuration: '4s' }} />
+                Premium Literary Hub
               </span>
-              <span className="badge badge-gold">
-                <TrendingUp size={12} />
-                2M+ Readers
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/15">
+                <TrendingUp size={11} />
+                2M+ Happy Readers
               </span>
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="section-title mb-4 leading-tight"
-              style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: 'var(--text-primary)' }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-6 font-extrabold tracking-tight leading-[1.08] text-slate-100"
+              style={{ 
+                fontFamily: 'Space Grotesk, sans-serif',
+                fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+                color: 'var(--text-primary)'
+              }}
             >
-              Discover Your Next{' '}
-              <span className="shine-text">Favourite Book</span>
+              Discover India's <br />
+              <span className="gradient-text font-black">Luxury Book Club</span>
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg leading-relaxed mb-8"
-              style={{ color: 'var(--text-secondary)', maxWidth: '520px' }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="text-base sm:text-lg mb-8 leading-relaxed font-medium"
+              style={{ color: 'var(--text-secondary)', maxWidth: '580px' }}
             >
-              Explore 5,00,000+ books across every genre. Get bestsellers at unbeatable prices, 
-              with fast delivery across India. Your story starts here.
+              Explore an exquisite curation of over 500,000+ works spanning mind-shifting finance, clean technology, and premium fiction. Unbeatable publisher discounts, and standard cash on delivery nationwide.
             </motion.p>
 
-            {/* Stats Row */}
+            {/* Apple/Notion Style CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="flex flex-wrap gap-6 mb-8"
-            >
-              {[
-                { value: '5L+', label: 'Books' },
-                { value: '2M+', label: 'Readers' },
-                { value: '500+', label: 'Cities' },
-                { value: '4.9★', label: 'Rating' },
-              ].map(stat => (
-                <div key={stat.label}>
-                  <div className="text-2xl font-bold gradient-text-gold">{stat.value}</div>
-                  <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="flex flex-wrap gap-4"
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-wrap items-center gap-4 mb-10"
             >
               <Link to="/products">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="btn-primary text-base px-8 py-3.5"
+                  className="btn-lux group"
                 >
-                  <span className="flex items-center gap-2">
-                    <BookOpen size={18} />
-                    Explore Books
-                    <ArrowRight size={16} />
-                  </span>
+                  <span>Browse Curation</span>
+                  <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </motion.button>
               </Link>
-              <Link to="/auth">
+              <Link to="/contact">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="btn-secondary text-base px-8 py-3.5"
+                  className="btn-lux-secondary"
                 >
-                  <span className="flex items-center gap-2">
-                    <Sparkles size={18} />
-                    Get Started Free
-                  </span>
+                  <Compass size={16} className="text-indigo-400" />
+                  <span>Support Center</span>
                 </motion.button>
               </Link>
             </motion.div>
 
-            {/* Trust indicators */}
+            {/* Micro Stats Grid */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="flex items-center gap-4 mt-8"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-white/5"
             >
-              <div className="flex -space-x-2">
-                {[47, 68, 45, 12].map(n => (
-                  <img key={n} src={`https://i.pravatar.cc/32?img=${n}`} alt=""
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ borderColor: 'var(--bg-primary)' }} />
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  {[1,2,3,4,5].map(s => <Star key={s} size={12} fill="#f59e0b" style={{ color: '#f59e0b' }} />)}
+              {[
+                { val: "5,00,000+", label: "Books Stocked", desc: "Across 25 genres" },
+                { val: "24-48 Hours", label: "Express Shipping", desc: "Metro delivery" },
+                { val: "100% Secure", label: "Cash On Delivery", desc: "Zero advance fees" },
+                { val: "4.9 ★ Rating", label: "Verified Reviews", desc: "1.2 Million stars" },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col">
+                  <span className="text-lg font-black text-slate-100 font-sans" style={{ color: 'var(--text-primary)' }}>{stat.val}</span>
+                  <span className="text-xs font-bold text-indigo-400 mt-0.5">{stat.label}</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5" style={{ color: 'var(--text-muted)' }}>{stat.desc}</span>
                 </div>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                  Trusted by <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>2M+ readers</span>
-                </p>
-              </div>
+              ))}
             </motion.div>
           </div>
 
-          {/* Right: 3D Books Visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative flex items-center justify-center h-[450px] md:h-[500px] w-full overflow-visible"
-          >
-            {/* Glow circle behind books */}
-            <div
-              className="absolute rounded-full pointer-events-none"
+          {/* Right Column: 3D Rotating Stack & Cursor-Following Cards */}
+          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[440px] lg:min-h-[500px]">
+            
+            {/* Ambient Purple Backdrop Circle */}
+            <div className="absolute w-72 h-72 rounded-full pointer-events-none filter blur-3xl opacity-30"
               style={{
-                width: '320px', height: '320px',
-                background: 'radial-gradient(circle, rgba(108,59,213,0.25), rgba(245,158,11,0.08), transparent 70%)',
-                animation: 'pulseGlow 3s ease-in-out infinite',
-                filter: 'blur(10px)',
+                background: 'radial-gradient(circle, rgba(99,102,241,0.6), rgba(236,72,153,0.3), transparent 75%)',
+                animation: 'pulse-glow 5s infinite ease-in-out'
               }}
             />
+            <style>{`
+              @keyframes pulse-glow {
+                0%, 100% { transform: scale(1); opacity: 0.25; }
+                50% { transform: scale(1.15); opacity: 0.35; }
+              }
+            `}</style>
 
-            {/* Books Container */}
-            <div className="relative flex items-center justify-center w-[300px] sm:w-[340px] h-[340px]">
-              {bookCovers.map((book, i) => (
-                <div key={i}
-                  className="absolute transition-all duration-300"
-                  style={{
-                    left: `${50 + (i - 1) * 30}%`,
-                    top: '50%',
-                    transform: `translate(-50%, -50%) rotate(${book.angle}deg) scale(${book.scale})`,
-                    zIndex: i === 1 ? 3 : 1,
-                    animation: `floatSlow ${5 + i * 1.5}s ease-in-out ${book.delay}s infinite`,
-                  }}
-                >
-                  <div
-                    className="rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-105"
-                    style={{
-                      width: i === 1 ? '140px' : '110px',
-                      height: i === 1 ? '200px' : '156px',
-                      boxShadow: `0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px ${book.color}30`,
-                      background: 'var(--bg-card)'
-                    }}
-                  >
-                    <img
-                      src={book.cover}
-                      alt=""
-                      className="w-full h-full object-cover"
-                      onError={e => { e.target.style.display = 'none'; e.target.parentElement.style.background = `linear-gradient(135deg, ${book.color}88, ${book.color}33)`; }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Floating badges - Solid, premium e-commerce style */}
+            {/* Parallax Container */}
             <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-8 right-4 p-3.5 rounded-xl shadow-lg border"
-              style={{
-                background: 'var(--bg-secondary)',
-                borderColor: 'var(--border-color)',
-                minWidth: '140px'
-              }}
+              style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+              className="relative flex items-center justify-center w-full h-full"
             >
-              <div className="flex items-center gap-2">
-                <Star size={15} fill="#f59e0b" style={{ color: '#f59e0b' }} />
-                <div>
-                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Bestseller</p>
-                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>Atomic Habits</p>
-                </div>
+              {/* Stack of 3D Books */}
+              <div className="relative w-64 h-80 flex items-center justify-center">
+                {bookCovers.map((book, idx) => {
+                  const isHovered = hoveredIndex === idx;
+                  return (
+                    <motion.div
+                      key={book.id}
+                      className="absolute cursor-pointer transition-all duration-300 select-none"
+                      style={{
+                        zIndex: isHovered ? 20 : book.id === 3 ? 10 : 5,
+                        transformStyle: 'preserve-3d',
+                        left: `calc(50% + ${book.offset})`,
+                        top: '50%',
+                        transform: `translate(-50%, -50%) rotate(${book.angle}deg) scale(${book.scale})`,
+                      }}
+                      onMouseEnter={() => setHoveredIndex(idx)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                      whileHover={{ 
+                        scale: book.scale + 0.08,
+                        rotate: book.angle * 0.4,
+                        y: -15,
+                        z: 50
+                      }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                    >
+                      {/* Realistic 3D Shadow Card */}
+                      <div className="relative rounded-2xl overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] w-36 h-52 sm:w-40 sm:h-56 border border-white/10 bg-slate-900 group">
+                        <img
+                          src={book.cover}
+                          alt={book.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={e => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.style.background = `linear-gradient(135deg, ${book.color}cc, #121225)`;
+                          }}
+                        />
+                        {/* Book Spine Overlay Effect */}
+                        <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/25 backdrop-blur-[1px] border-r border-white/5" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                          <p className="font-extrabold text-[11px] text-white leading-tight">{book.title}</p>
+                          <p className="text-[9px] text-slate-300 mt-0.5">{book.author}</p>
+                          <span className="text-xs font-black text-amber-400 mt-1">{book.price}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
-            </motion.div>
 
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute bottom-8 left-4 p-3.5 rounded-xl shadow-lg border"
-              style={{
-                background: 'var(--bg-secondary)',
-                borderColor: 'var(--border-color)',
-                minWidth: '150px'
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">🚀</span>
-                <div>
-                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Fast Delivery</p>
-                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>2-4 Days Metro</p>
+              {/* Floating Badge 1: COD Guaranteed */}
+              <motion.div
+                style={{ translateZ: 60 }}
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute -top-6 right-2 sm:right-6 p-3 rounded-2xl glass shadow-2xl border border-white/10 flex items-center gap-2.5 min-w-[155px]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={16} className="text-amber-500" />
                 </div>
-              </div>
-            </motion.div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-100">COD Guarantee</p>
+                  <p className="text-[8px] font-bold text-slate-400">No Advance Payment</p>
+                </div>
+              </motion.div>
 
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              className="absolute top-1/2 -right-2 p-3.5 rounded-xl shadow-lg border"
-              style={{
-                background: 'var(--bg-secondary)',
-                borderColor: 'var(--border-color)',
-                minWidth: '130px'
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">💰</span>
-                <div>
-                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Save up to 43%</p>
-                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>Best Price Guarantee</p>
+              {/* Floating Badge 2: Free Shipping */}
+              <motion.div
+                style={{ translateZ: 80 }}
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+                className="absolute bottom-2 -left-2 sm:left-4 p-3 rounded-2xl glass shadow-2xl border border-white/10 flex items-center gap-2.5 min-w-[155px]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0">
+                  <Truck size={16} className="text-indigo-400" />
                 </div>
-              </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-100">Express Delivery</p>
+                  <p className="text-[8px] font-bold text-slate-400">All India Shipping</p>
+                </div>
+              </motion.div>
+
+              {/* Floating Badge 3: Discount Indicator */}
+              <motion.div
+                style={{ translateZ: 45 }}
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                className="absolute top-1/2 -right-8 p-3 rounded-2xl glass shadow-2xl border border-white/10 flex items-center gap-2.5 min-w-[140px]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-pink-500/15 flex items-center justify-center shrink-0">
+                  <Percent size={15} className="text-pink-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-100">Up to 40% Off</p>
+                  <p className="text-[8px] font-bold text-slate-400">Publisher Discounts</p>
+                </div>
+              </motion.div>
+
             </motion.div>
-          </motion.div>
+          </div>
+
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
-        <div className="w-6 h-10 rounded-full border-2 flex items-start justify-center p-1.5"
-          style={{ borderColor: 'rgba(108,59,213,0.4)' }}>
-          <div className="w-1.5 h-2.5 rounded-full"
-            style={{ background: '#6c3bd5', animation: 'scrollDown 2s infinite' }} />
-        </div>
-        <style>{`@keyframes scrollDown { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }`}</style>
-        <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>Scroll to explore</span>
-      </motion.div>
+      
     </section>
   );
 }

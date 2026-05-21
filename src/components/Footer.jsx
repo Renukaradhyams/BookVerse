@@ -59,90 +59,105 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    alert('Thank you for subscribing! Premium literary highlights are on their way. 📚✨');
+    e.target.reset();
+  };
+
   return (
-    <footer style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }} className="relative z-10 w-full">
-      {/* Back to Top bar */}
+    <footer style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }} className="relative z-10 w-full font-sans">
+      {/* Sleek Frosted Back to Top bar */}
       <button 
         onClick={scrollToTop}
-        className="w-full py-4 text-center text-xs font-extrabold transition-all duration-300 uppercase tracking-widest border-b select-none cursor-pointer flex items-center justify-center gap-1.5"
+        className="w-full py-4 text-center text-xs font-bold transition-all duration-300 uppercase tracking-widest border-b select-none cursor-pointer flex items-center justify-center gap-1.5"
         style={{ 
-          background: 'var(--bg-secondary)', 
+          background: 'rgba(255, 255, 255, 0.01)', 
           color: 'var(--text-secondary)',
           borderColor: 'var(--border-color)',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(108, 59, 213, 0.08)';
-          e.currentTarget.style.color = 'var(--accent-purple)';
+          e.currentTarget.style.background = 'rgba(99, 102, 241, 0.05)';
+          e.currentTarget.style.color = 'var(--accent-indigo)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.background = 'var(--bg-secondary)';
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.01)';
           e.currentTarget.style.color = 'var(--text-secondary)';
         }}
       >
         Back to Top <span>▲</span>
       </button>
 
-      {/* Premium Trust Badge Strip */}
-      <div className="py-10 border-b" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+      {/* Trust Badge Grid - Frosted Minimal Glassmorphism */}
+      <div className="py-12 border-b" style={{ borderColor: 'var(--border-color)' }}>
         <div className="container-main">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-            <div className="flex flex-col items-center p-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] border border-transparent hover:border-[var(--border-color)] hover:shadow-sm" style={{ background: 'var(--bg-card)' }}>
-              <span className="text-3xl mb-3">🚚</span>
-              <h5 className="font-extrabold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Free Shipping PAN India</h5>
-              <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>On all orders above ₹499</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="glass p-6 rounded-2xl flex items-center gap-4 hover:translate-y-[-2px] transition-all duration-300">
+              <span className="text-3xl select-none">🚚</span>
+              <div>
+                <h5 className="font-extrabold text-sm" style={{ color: 'var(--text-primary)' }}>Free Shipping PAN India</h5>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Complimentary dispatch on orders above ₹499</p>
+              </div>
             </div>
-            <div className="flex flex-col items-center p-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] border border-transparent hover:border-[var(--border-color)] hover:shadow-sm" style={{ background: 'var(--bg-card)' }}>
-              <span className="text-3xl mb-3">🤝</span>
-              <h5 className="font-extrabold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Cash on Delivery (COD)</h5>
-              <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>Pay in cash or UPI upon delivery</p>
+            <div className="glass p-6 rounded-2xl flex items-center gap-4 hover:translate-y-[-2px] transition-all duration-300">
+              <span className="text-3xl select-none">🤝</span>
+              <div>
+                <h5 className="font-extrabold text-sm" style={{ color: 'var(--text-primary)' }}>Cash on Delivery (COD)</h5>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Zero advance payment. Pay in Cash/UPI at delivery</p>
+              </div>
             </div>
-            <div className="flex flex-col items-center p-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] border border-transparent hover:border-[var(--border-color)] hover:shadow-sm" style={{ background: 'var(--bg-card)' }}>
-              <span className="text-3xl mb-3">🔄</span>
-              <h5 className="font-extrabold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Easy Returns</h5>
-              <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>7-day hassle-free exchange/refund</p>
+            <div className="glass p-6 rounded-2xl flex items-center gap-4 hover:translate-y-[-2px] transition-all duration-300">
+              <span className="text-3xl select-none">🔄</span>
+              <div>
+                <h5 className="font-extrabold text-sm" style={{ color: 'var(--text-primary)' }}>7-Day Returns Guarantee</h5>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Exchange or instant refund if not fully satisfied</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Newsletter - Solid elegant banner */}
-      <div className="py-14" style={{ background: 'var(--bg-primary)' }}>
+      {/* Elegant Newsletter Subscription Banner */}
+      <div className="py-16" style={{ background: 'var(--bg-primary)' }}>
         <div className="container-main">
           <div 
-            className="p-8 md:p-12 flex flex-col lg:flex-row items-center gap-8 rounded-2xl border shadow-sm"
-            style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}
+            className="p-8 md:p-12 flex flex-col lg:flex-row items-center gap-8 rounded-2xl border"
+            style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)', boxShadow: 'var(--shadow-lux)' }}
           >
-            <div className="flex-1 text-center lg:text-left">
-              <div className="flex items-center gap-2 justify-center lg:justify-start mb-3">
-                <Sparkles size={16} style={{ color: '#f59e0b' }} />
-                <span className="text-xs font-bold badge badge-gold">Newsletter</span>
+            <div className="flex-1 text-center lg:text-left space-y-3">
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <Sparkles size={14} style={{ color: 'var(--accent-gold)' }} />
+                <span className="text-[10px] font-extrabold uppercase tracking-widest bg-[rgba(245,158,11,0.1)] text-[var(--accent-gold)] px-2 py-0.5 rounded-full">
+                  Weekly Dispatch
+                </span>
               </div>
-              <h3 className="section-title text-2xl md:text-3xl mb-2 font-extrabold" style={{ color: 'var(--text-primary)' }}>
+              <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
                 Subscribe for Literary Updates
               </h3>
-              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xs md:text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Join over 50,000+ avid readers. Get handpicked weekly recommendations, exclusive store deals, and author spotlights.
               </p>
             </div>
+            
             <div className="flex-1 w-full lg:max-w-md">
-              <form onSubmit={e => e.preventDefault()} className="flex flex-col sm:flex-row gap-3">
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="input-field flex-1 text-sm font-semibold"
+                  className="input-lux flex-1 text-xs font-semibold"
                   required
                 />
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="btn-gold shrink-0 px-6 py-3 font-bold cursor-pointer"
+                  className="btn-lux shrink-0 px-6 py-3 text-xs tracking-wider uppercase font-bold cursor-pointer"
                 >
                   <span>Subscribe</span>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={14} />
                 </motion.button>
               </form>
-              <p className="text-xs mt-2.5 text-center lg:text-left font-semibold flex items-center justify-center lg:justify-start gap-1" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-[10px] font-bold mt-3 text-center lg:text-left flex items-center justify-center lg:justify-start gap-1" style={{ color: 'var(--text-secondary)' }}>
                 <ShieldCheck size={13} className="text-green-500" />
                 No spam, unsubscribe at any time. Secure & Private.
               </p>
@@ -151,38 +166,41 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Main Footer Links */}
+      {/* Main Footer Directory */}
       <div className="py-16">
         <div className="container-main">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             {/* Brand Block */}
-            <div>
-              <Link to="/" className="flex items-center gap-2.5 mb-5 group">
+            <div className="space-y-5">
+              <Link to="/" className="flex items-center gap-2.5 group">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-105"
-                  style={{ background: 'linear-gradient(135deg, #6c3bd5, #f59e0b)' }}>
+                  style={{ background: 'linear-gradient(135deg, var(--accent-indigo), var(--accent-gold))' }}>
                   <BookOpen size={20} className="text-white" />
                 </div>
-                <span className="font-extrabold text-xl tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                <span className="font-black text-xl tracking-tight" style={{ color: 'var(--text-primary)' }}>
                   <span style={{ color: 'var(--accent-purple)' }}>Book</span>Verse
-                  <span className="text-xs font-bold ml-1" style={{ color: 'var(--accent-gold)' }}>INDIA</span>
+                  <span className="text-[10px] font-black ml-1 uppercase tracking-widest text-[var(--accent-gold)]">
+                    India
+                  </span>
                 </span>
               </Link>
-              <p className="text-sm font-semibold leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
-                India's premier online bookstore. Discover inspiring stories, deep knowledge, and transformative ideas that help you grow.
+              <p className="text-xs md:text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                India's premier modern online bookstore. Discover inspiring stories, deep knowledge, and transformative ideas that help you grow.
               </p>
-              {/* Social media connections */}
-              <div className="flex gap-3">
+              
+              {/* Social Channels */}
+              <div className="flex gap-2.5">
                 {socialLinks.map(({ icon: Icon, href, color, label }) => (
                   <motion.a
                     key={label}
                     href={href}
-                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileHover={{ scale: 1.08, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border shadow-sm cursor-pointer"
                     style={{ background: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}
                     onMouseEnter={e => { 
                       e.currentTarget.style.borderColor = color; 
-                      e.currentTarget.style.background = color + '15'; 
+                      e.currentTarget.style.background = color + '10'; 
                     }}
                     onMouseLeave={e => { 
                       e.currentTarget.style.borderColor = 'var(--border-color)'; 
@@ -190,25 +208,25 @@ export default function Footer() {
                     }}
                     aria-label={label}
                   >
-                    <Icon size={18} style={{ color }} />
+                    <Icon size={16} style={{ color }} />
                   </motion.a>
                 ))}
               </div>
             </div>
 
-            {/* Navigation column */}
-            <div>
-              <h4 className="font-extrabold text-xs tracking-widest uppercase mb-5" style={{ color: 'var(--text-primary)' }}>
+            {/* Quick Links Column */}
+            <div className="space-y-5">
+              <h4 className="font-extrabold text-xs tracking-widest uppercase" style={{ color: 'var(--text-primary)' }}>
                 Explore BookVerse
               </h4>
-              <ul className="space-y-3.5">
+              <ul className="space-y-3">
                 {quickLinks.map(link => (
                   <li key={link.to}>
                     <Link to={link.to}
-                      className="text-sm font-semibold flex items-center gap-2 transition-all duration-200"
+                      className="text-xs font-semibold flex items-center gap-2 transition-all duration-200"
                       style={{ color: 'var(--text-secondary)' }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.color = 'var(--accent-purple)';
+                        e.currentTarget.style.color = 'var(--accent-indigo)';
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }}
                       onMouseLeave={e => {
@@ -216,7 +234,7 @@ export default function Footer() {
                         e.currentTarget.style.transform = 'translateX(0px)';
                       }}
                     >
-                      <ArrowRight size={12} className="opacity-70 text-[var(--accent-purple)]" />
+                      <ArrowRight size={12} className="opacity-75 text-[var(--accent-indigo)]" />
                       {link.label}
                     </Link>
                   </li>
@@ -224,19 +242,19 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Categories column */}
-            <div>
-              <h4 className="font-extrabold text-xs tracking-widest uppercase mb-5" style={{ color: 'var(--text-primary)' }}>
-                Popular Categories
+            {/* Popular Genres Column */}
+            <div className="space-y-5">
+              <h4 className="font-extrabold text-xs tracking-widest uppercase" style={{ color: 'var(--text-primary)' }}>
+                Popular Genres
               </h4>
-              <ul className="space-y-3.5">
+              <ul className="space-y-3">
                 {categories.map(cat => (
                   <li key={cat.to}>
                     <Link to={cat.to}
-                      className="text-sm font-semibold flex items-center gap-2 transition-all duration-200"
+                      className="text-xs font-semibold flex items-center gap-2 transition-all duration-200"
                       style={{ color: 'var(--text-secondary)' }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.color = 'var(--accent-purple)';
+                        e.currentTarget.style.color = 'var(--accent-indigo)';
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }}
                       onMouseLeave={e => {
@@ -244,7 +262,7 @@ export default function Footer() {
                         e.currentTarget.style.transform = 'translateX(0px)';
                       }}
                     >
-                      <ArrowRight size={12} className="opacity-70 text-[var(--accent-purple)]" />
+                      <ArrowRight size={12} className="opacity-75 text-[var(--accent-indigo)]" />
                       {cat.label}
                     </Link>
                   </li>
@@ -252,39 +270,39 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Contact column */}
-            <div>
-              <h4 className="font-extrabold text-xs tracking-widest uppercase mb-5" style={{ color: 'var(--text-primary)' }}>
-                Get In Touch
+            {/* Direct Contact & payment strip */}
+            <div className="space-y-5">
+              <h4 className="font-extrabold text-xs tracking-widest uppercase" style={{ color: 'var(--text-primary)' }}>
+                Headquarters
               </h4>
-              <ul className="space-y-4 mb-6">
+              <ul className="space-y-3.5">
                 <li className="flex items-start gap-3">
-                  <MapPin size={18} className="shrink-0 mt-0.5" style={{ color: 'var(--accent-purple)' }} />
-                  <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                    42, Book Street, Connaught Place<br />New Delhi, 110001, India
+                  <MapPin size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--accent-indigo)' }} />
+                  <span className="text-xs font-semibold leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    42, Book Street, Connaught Place,<br />New Delhi, 110001, India
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Phone size={18} style={{ color: 'var(--accent-purple)' }} />
-                  <a href="tel:+911800BOOKVERSE" className="text-sm font-bold hover:underline"
+                  <Phone size={16} style={{ color: 'var(--accent-indigo)' }} />
+                  <a href="tel:+911800BOOKVERSE" className="text-xs font-bold hover:underline"
                     style={{ color: 'var(--text-secondary)' }}>+91 1800-BOOKVERSE</a>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Mail size={18} style={{ color: 'var(--accent-purple)' }} />
-                  <a href="mailto:hello@bookverse.in" className="text-sm font-bold hover:underline"
+                  <Mail size={16} style={{ color: 'var(--accent-indigo)' }} />
+                  <a href="mailto:hello@bookverse.in" className="text-xs font-bold hover:underline"
                     style={{ color: 'var(--text-secondary)' }}>hello@bookverse.in</a>
                 </li>
               </ul>
 
-              {/* Secure payments - Solid Flipkart style */}
-              <div>
-                <p className="text-[10px] font-extrabold tracking-widest uppercase mb-2.5" style={{ color: 'var(--text-secondary)' }}>
-                  Secure Payment Guarantee
+              {/* Secure Payments strip - Clean Amazon Kindle/Notion minimalist layout */}
+              <div className="pt-2">
+                <p className="text-[9px] font-extrabold tracking-widest uppercase mb-2.5" style={{ color: 'var(--text-secondary)' }}>
+                  COD Verification Channels
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {['UPI', 'VISA', 'MC', 'RuPay', 'COD Only'].map(p => (
+                  {['UPI Scan', 'RuPay', 'VISA Card', 'MC Card', 'COD Pay'].map(p => (
                     <span key={p}
-                      className="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg border shadow-sm select-none"
+                      className="text-[9px] font-black tracking-wide px-2.5 py-1.5 rounded-lg border shadow-sm select-none"
                       style={{ background: 'var(--bg-primary)', borderColor: 'var(--border-color)', color: 'var(--text-secondary)' }}>
                       {p}
                     </span>
@@ -298,9 +316,9 @@ export default function Footer() {
           <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t"
             style={{ borderColor: 'var(--border-color)' }}>
             <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-              © {new Date().getFullYear()} BookVerse India. All rights reserved. Made with <Heart size={12} className="inline text-red-500 fill-red-500" /> in India.
+              © {new Date().getFullYear()} BookVerse India. All rights reserved. Made with <Heart size={10} className="inline text-red-500 fill-red-500 mx-0.5" /> in India.
             </p>
-            <div className="flex flex-wrap gap-5 text-xs font-extrabold" style={{ color: 'var(--text-secondary)' }}>
+            <div className="flex flex-wrap gap-5 text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
               <a href="#" className="hover:text-purple-400 transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-purple-400 transition-colors">Terms of Service</a>
               <a href="#" className="hover:text-purple-400 transition-colors">Shipping Policy</a>

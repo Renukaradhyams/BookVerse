@@ -1,6 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -8,50 +8,49 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import {
   ChevronLeft, ChevronRight, TrendingUp, Sparkles, Crown, Zap, Star,
-  Brain, IndianRupee, Laptop, BookOpen, History, Atom, Award
+  Brain, IndianRupee, Laptop, BookOpen, History, Atom, Award, Compass, ShieldAlert
 } from 'lucide-react';
 import BookCard from "../components/BookCard";
-import { books, categories, testimonials, stats } from "../data/books";
+import { books, testimonials, stats } from "../data/books";
 import Hero from "../components/Hero";
-import { useInView } from 'react-intersection-observer';
 
 function SectionHeader({ badge, title, subtitle, icon: Icon }) {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-      className="text-center mb-12"
-    >
+    <div className="text-center mb-16 max-w-3xl mx-auto px-4">
       {badge && (
-        <div className="flex items-center gap-2 justify-center mb-3">
-          {Icon && <Icon size={16} style={{ color: '#f59e0b' }} />}
-          <span className="badge badge-gold">{badge}</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/15 mb-4">
+          {Icon && <Icon size={12} className="animate-pulse" />}
+          <span>{badge}</span>
         </div>
       )}
-      <h2 className="section-title mb-3" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+      <h2 className="font-extrabold tracking-tight leading-tight text-slate-100 mb-4" 
+          style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(2rem, 4vw, 2.75rem)', color: 'var(--text-primary)' }}>
+        {title}
+      </h2>
       {subtitle && (
-        <p className="text-base max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{subtitle}</p>
+        <p className="text-sm sm:text-base leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
+          {subtitle}
+        </p>
       )}
-    </motion.div>
+    </div>
   );
 }
 
-function StatCounter({ value, label, icon }) {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.5 });
+function StatCard({ value, label, icon }) {
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5 }}
-      className="text-center glass-card p-6"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="glass-card p-8 flex flex-col items-center text-center relative overflow-hidden"
     >
-      <div className="text-4xl mb-2">{icon}</div>
-      <div className="text-3xl font-bold gradient-text-gold">{value}</div>
-      <div className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{label}</div>
+      {/* Background glow */}
+      <div className="absolute w-20 h-20 rounded-full bg-indigo-500/5 -top-6 -right-6 filter blur-xl" />
+      <span className="text-3xl mb-3">{icon}</span>
+      <span className="text-3xl font-black tracking-tight text-slate-100 font-sans" style={{ color: 'var(--text-primary)' }}>
+        {value}
+      </span>
+      <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest mt-2">{label}</span>
     </motion.div>
   );
 }
@@ -59,52 +58,71 @@ function StatCounter({ value, label, icon }) {
 export default function Home() {
   const trendingBooks = books.filter(b => b.isTrending);
   const bestSellers = books.filter(b => b.isBestSeller).slice(0, 8);
-  const newArrivals = books.filter(b => b.isNew);
-  const allBooks = books.slice(0, 8);
+  const newArrivals = books.slice(6, 14);
+  
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const categoryData = [
-    { name: 'Self-Help', count: 45, color: '#6c3bd5', to: '/products?category=self-help', icon: Brain },
-    { name: 'Finance', count: 32, color: '#f59e0b', to: '/products?category=finance', icon: IndianRupee },
-    { name: 'Technology', count: 58, color: '#3b82f6', to: '/products?category=technology', icon: Laptop },
-    { name: 'Fiction', count: 124, color: '#ec4899', to: '/products?category=fiction', icon: BookOpen },
-    { name: 'Business', count: 41, color: '#10b981', to: '/products?category=business', icon: TrendingUp },
-    { name: 'History', count: 29, color: '#f97316', to: '/products?category=non-fiction', icon: History },
-    { name: 'Science', count: 36, color: '#06b6d4', to: '/products?category=technology', icon: Atom },
-    { name: 'Biography', count: 22, color: '#8b5cf6', to: '/products?category=non-fiction', icon: Award },
+  const bentoCategories = [
+    { id: 'self-help', name: 'Self-Improvement', count: 45, color: '#818cf8', icon: Brain, span: 'col-span-12 sm:col-span-6 lg:col-span-5 h-[230px]', desc: 'Form habits, master productivity & expand thinking' },
+    { id: 'finance', name: 'Wealth & Personal Finance', count: 32, color: '#fbbf24', icon: IndianRupee, span: 'col-span-12 sm:col-span-6 lg:col-span-3 h-[230px]', desc: 'Money rules & investment philosophy' },
+    { id: 'technology', name: 'Tech & AI Mastery', count: 58, color: '#38bdf8', icon: Laptop, span: 'col-span-12 lg:col-span-4 h-[230px]', desc: 'Deep learning, clean engineering & systems' },
+    { id: 'fiction', name: 'Modern & Classic Fiction', count: 124, color: '#f472b6', icon: BookOpen, span: 'col-span-12 sm:col-span-7 lg:col-span-6 h-[230px]', desc: 'Immersive stories & legendary masterpieces' },
+    { id: 'business', name: 'Startup & Strategy', count: 41, color: '#34d399', icon: TrendingUp, span: 'col-span-12 sm:col-span-5 lg:col-span-3 h-[230px]', desc: 'Business frameworks & venture execution' },
+    { id: 'non-fiction', name: 'History & Biography', count: 29, color: '#fb923c', icon: History, span: 'col-span-12 lg:col-span-3 h-[230px]', desc: 'Civilizations, rulers & human evolution' },
   ];
 
   return (
-    <div>
+    <div className="overflow-hidden">
+      
+      {/* 1. Hero Section */}
       <Hero />
 
-      {/* Stats Section */}
-      <section className="py-16" style={{ background: 'var(--bg-secondary)' }}>
+      {/* 2. Brand Value Indicators / Stats */}
+      <section className="py-16 border-y border-white/5 relative z-10" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container-main">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, i) => (
-              <StatCounter key={i} {...stat} />
+              <StatCard key={i} {...stat} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Trending Books Carousel */}
-      <section className="py-20" style={{ background: 'var(--bg-primary)' }}>
-        <div className="container-main">
-          <SectionHeader
-            badge="Trending Now"
-            icon={TrendingUp}
-            title="What Everyone's Reading"
-            subtitle="Discover the most popular books loved by thousands of Indian readers this week."
-          />
+      {/* 3. Trending Carousel (Swiper) */}
+      <section className="py-[120px] relative" style={{ background: 'var(--bg-primary)' }}>
+        <div className="container-main relative z-10">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-10 gap-6">
+            <div className="text-left md:max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-500/10 text-pink-400 border border-pink-500/15 mb-3">
+                <TrendingUp size={11} />
+                Weekly Buzz
+              </div>
+              <h2 className="font-extrabold tracking-tight leading-tight text-slate-100" 
+                  style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', color: 'var(--text-primary)' }}>
+                What Everyone's Reading Now
+              </h2>
+            </div>
+            
+            {/* Swiper Frosted Controls */}
+            <div className="flex items-center gap-2">
+              <button ref={prevRef}
+                className="w-12 h-12 glass rounded-2xl flex items-center justify-center border border-white/10 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all">
+                <ChevronLeft size={20} className="text-slate-200" />
+              </button>
+              <button ref={nextRef}
+                className="w-12 h-12 glass rounded-2xl flex items-center justify-center border border-white/10 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all">
+                <ChevronRight size={20} className="text-slate-200" />
+              </button>
+            </div>
+          </div>
+
           <div className="relative">
             <Swiper
               modules={[Autoplay, Navigation, Pagination]}
-              spaceBetween={20}
+              spaceBetween={24}
               slidesPerView={1}
-              autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+              autoplay={{ delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true }}
               pagination={{ clickable: true, dynamicBullets: true }}
               navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
               onBeforeInit={swiper => {
@@ -115,9 +133,8 @@ export default function Home() {
                 480: { slidesPerView: 2 },
                 768: { slidesPerView: 3 },
                 1024: { slidesPerView: 4 },
-                1280: { slidesPerView: 5 },
               }}
-              className="pb-10"
+              className="pb-14 !overflow-visible"
             >
               {trendingBooks.map((book, i) => (
                 <SwiperSlide key={book.id}>
@@ -125,97 +142,100 @@ export default function Home() {
                 </SwiperSlide>
               ))}
             </Swiper>
-
-            {/* Custom Nav Buttons */}
-            <button ref={prevRef}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 glass rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ border: '1px solid var(--border-color)' }}>
-              <ChevronLeft size={18} style={{ color: 'var(--text-primary)' }} />
-            </button>
-            <button ref={nextRef}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 glass rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ border: '1px solid var(--border-color)' }}>
-              <ChevronRight size={18} style={{ color: 'var(--text-primary)' }} />
-            </button>
           </div>
         </div>
       </section>
 
-      {/* Categories Grid */}
-      <section className="py-20" style={{ background: 'var(--bg-secondary)' }}>
+      {/* 4. Asymmetric Bento Grid Categories */}
+      <section className="py-[120px]" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container-main">
           <SectionHeader
-            badge="Browse by Category"
+            badge="Premium Curation"
             icon={Sparkles}
-            title="Explore Every Genre"
-            subtitle="From page-turning fiction to life-changing non-fiction, find your perfect read."
+            title="Browse by Curated Shelves"
+            subtitle="Assembled carefully for the selective reader. Dive into top-tier editions across deep-tech, mind engineering, classics, and personal leverage."
           />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {categoryData.map((cat, i) => (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-              >
-                <Link to={cat.to}>
-                  <div
-                    className="group glass-card p-6 text-center cursor-pointer relative overflow-hidden h-full flex flex-col justify-between"
-                    style={{ border: `1px solid ${cat.color}20` }}
-                  >
+
+          {/* Asymmetric Bento Grid */}
+          <div className="grid grid-cols-12 gap-6 mt-12">
+            {bentoCategories.map((cat, i) => {
+              const Icon = cat.icon;
+              return (
+                <motion.div
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                  className={cat.span}
+                >
+                  <Link to={`/products?category=${cat.id}`}>
                     <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(135deg, ${cat.color}10, transparent)` }}
-                    />
-                    <div className="relative z-10 flex flex-col items-center">
-                      <div
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl transition-transform group-hover:scale-110 duration-300"
-                        style={{ background: `${cat.color}15`, border: `1px solid ${cat.color}30` }}
-                      >
-                        <cat.icon size={22} style={{ color: cat.color }} />
+                      className="glass-card p-8 h-full flex flex-col justify-between cursor-pointer relative overflow-hidden group border border-white/5 hover:border-indigo-500/20"
+                      style={{ 
+                        boxShadow: 'var(--shadow-lux)',
+                      }}
+                    >
+                      {/* Ambient Gradient Glow */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{ background: `radial-gradient(circle at 10% 10%, ${cat.color}12, transparent 60%)` }} />
+                      
+                      <div className="relative z-10">
+                        {/* Upper row: Icon & Counters */}
+                        <div className="flex items-center justify-between">
+                          <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110"
+                            style={{ background: `${cat.color}12`, border: `1px solid ${cat.color}25` }}>
+                            <Icon size={22} style={{ color: cat.color }} />
+                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/5 border border-white/5 text-slate-400 group-hover:text-slate-200">
+                            {cat.count}+ Titles
+                          </span>
+                        </div>
+
+                        {/* Title & Desc */}
+                        <h3 className="font-extrabold text-lg mt-6 text-slate-100 group-hover:text-white" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
+                        <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{cat.desc}</p>
                       </div>
-                      <h3 className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
-                      <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{cat.count}+ Books</p>
+
+                      {/* Bottom glow line */}
+                      <div className="absolute bottom-0 inset-x-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{ background: `linear-gradient(90deg, transparent, ${cat.color}, transparent)` }} />
                     </div>
-                    <div
-                      className="absolute bottom-0 inset-x-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(90deg, transparent, ${cat.color}, transparent)` }}
-                    />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Best Sellers */}
-      <section className="py-20" style={{ background: 'var(--bg-primary)' }}>
+      {/* 5. Best Sellers Section */}
+      <section className="py-[120px]" style={{ background: 'var(--bg-primary)' }}>
         <div className="container-main">
-          <div className="flex items-start justify-between mb-12 flex-wrap gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Crown size={16} style={{ color: '#f59e0b' }} />
-                <span className="badge badge-gold">Best Sellers</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-16 gap-6">
+            <div className="text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/15 mb-3">
+                <Crown size={11} />
+                Gold Standard
               </div>
-              <h2 className="section-title" style={{ color: 'var(--text-primary)' }}>All-Time Favourites</h2>
-              <p className="mt-2 text-base" style={{ color: 'var(--text-secondary)' }}>
-                Books that have changed millions of lives.
-              </p>
+              <h2 className="font-extrabold tracking-tight leading-tight text-slate-100" 
+                  style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', color: 'var(--text-primary)' }}>
+                All-Time Classics & Bestsellers
+              </h2>
             </div>
             <Link to="/products">
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="btn-secondary"
+                className="btn-lux-secondary shrink-0"
               >
-                View All Books →
+                <span>View Curation Shelf</span>
+                <ChevronRight size={16} />
               </motion.button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {bestSellers.map((book, i) => (
               <BookCard key={book.id} book={book} index={i} />
             ))}
@@ -223,77 +243,71 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI Recommendation Banner */}
-      <section className="py-16">
+      {/* 6. Premium AI-Powered Recommendation Callout */}
+      <section className="py-12 relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
         <div className="container-main">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl p-8 md:p-12 relative overflow-hidden"
+            className="rounded-[32px] p-8 md:p-14 relative overflow-hidden border border-white/5 shadow-2xl"
             style={{
-              background: 'linear-gradient(135deg, rgba(108,59,213,0.2), rgba(245,158,11,0.1), rgba(236,72,153,0.1))',
-              border: '1px solid rgba(108,59,213,0.2)',
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(236,72,153,0.06) 50%, rgba(245,158,11,0.03) 100%)',
             }}
           >
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(108,59,213,0.3), transparent)' }} />
-            <div className="absolute bottom-0 left-1/4 w-48 h-48 rounded-full blur-2xl pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.2), transparent)' }} />
+            {/* Aurora Background blobs */}
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20"
+              style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.4), transparent)' }} />
+            <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-2xl pointer-events-none opacity-10"
+              style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.3), transparent)' }} />
 
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap size={18} style={{ color: '#f59e0b' }} />
-                  <span className="badge badge-gold">AI-Powered</span>
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+              <div className="flex-1 text-left lg:max-w-2xl">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/15 mb-4">
+                  <Zap size={11} className="text-amber-400" />
+                  Smart Curation System
                 </div>
-                <h2 className="section-title text-3xl mb-3" style={{ color: 'var(--text-primary)' }}>
-                  Books Curated Just For You
+                <h2 className="font-extrabold tracking-tight leading-tight text-slate-100 mb-4" 
+                    style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(1.75rem, 3vw, 2.25rem)' }}>
+                  Books Picked Specially For Your Intellect
                 </h2>
-                <p className="text-base mb-6" style={{ color: 'var(--text-secondary)' }}>
-                  Our intelligent recommendation engine analyzes your reading patterns to suggest 
-                  books you'll absolutely love. Get personalized picks every week.
+                <p className="text-sm sm:text-base leading-relaxed text-slate-400 mb-8" style={{ color: 'var(--text-secondary)' }}>
+                  Our proprietary algorithmic recommendation matches your strategic reading criteria. Tell us what subjects you want to leverage, and receive detailed reading paths.
                 </p>
-                <Link to="/auth">
+                <Link to="/products">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    className="btn-primary"
+                    className="btn-lux"
                   >
-                    <span className="flex items-center gap-2">
-                      <Zap size={16} />
-                      Get Personalized Picks
-                    </span>
+                    <Compass size={16} />
+                    <span>Get Smart Picks</span>
                   </motion.button>
                 </Link>
               </div>
 
-              {/* Recommendation Cards Preview */}
-              <div className="flex gap-3 shrink-0">
+              {/* Overlapping Floating Mini Books Visual */}
+              <div className="flex gap-4 shrink-0 pointer-events-none relative h-36 w-60 items-center justify-center">
                 {books.filter(b => b.rating >= 4.7).slice(0, 3).map((book, i) => (
                   <motion.div
                     key={book.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.15 }}
-                    whileHover={{ y: -8, scale: 1.05 }}
-                    className="cursor-pointer"
+                    className="absolute shadow-2xl rounded-xl overflow-hidden border border-white/10 bg-slate-950"
+                    style={{
+                      width: i === 1 ? '90px' : '75px',
+                      height: i === 1 ? '130px' : '108px',
+                      transform: i === 0 ? 'translateX(-50px) rotate(-10deg) scale(0.9)' : i === 2 ? 'translateX(50px) rotate(10deg) scale(0.9)' : 'none',
+                      zIndex: i === 1 ? 10 : 5,
+                      boxShadow: '0 20px 45px rgba(0, 0, 0, 0.5)'
+                    }}
+                    animate={{ y: i % 2 === 0 ? [0, -6, 0] : [0, 6, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
                   >
-                    <Link to={`/product/${book.id}`}>
-                      <div
-                        className="rounded-xl overflow-hidden shadow-xl"
-                        style={{
-                          width: i === 1 ? '90px' : '75px',
-                          height: i === 1 ? '130px' : '108px',
-                          transform: i === 0 ? 'rotate(-8deg)' : i === 2 ? 'rotate(8deg)' : 'none',
-                          boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                        }}
-                      >
-                        <img src={book.cover} alt={book.title} className="w-full h-full object-cover"
-                          onError={e => { e.target.src = 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=80&h=112&fit=crop'; }} />
-                      </div>
-                    </Link>
+                    <img src={book.cover} alt="" className="w-full h-full object-cover"
+                      onError={e => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.style.background = 'linear-gradient(135deg, #1e1e3f, #0b0b14)';
+                      }}
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -302,119 +316,130 @@ export default function Home() {
         </div>
       </section>
 
-      {/* All Books Grid */}
-      <section className="py-20" style={{ background: 'var(--bg-secondary)' }}>
+      {/* 7. New Arrivals Section */}
+      <section className="py-[120px]" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container-main">
           <SectionHeader
-            badge="New Arrivals"
+            badge="Fresh Curation"
             icon={Sparkles}
-            title="Fresh Off the Press"
-            subtitle="The latest additions to our collection — be the first to read them."
+            title="Fresh Additions to BookVerse"
+            subtitle="The absolute latest entries into our national catalog. Secure these limited copies before stock sells out."
           />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {allBooks.map((book, i) => (
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {newArrivals.map((book, i) => (
               <BookCard key={book.id} book={book} index={i} />
             ))}
           </div>
-          <div className="text-center mt-10">
+
+          <div className="text-center mt-14">
             <Link to="/products">
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="btn-primary px-10 py-4 text-base"
+                className="btn-lux px-10 py-4"
               >
-                <span className="flex items-center gap-2">
-                  Explore All Books
-                  <Sparkles size={16} />
-                </span>
+                <span>Explore Full Library</span>
+                <Sparkles size={15} />
               </motion.button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20" style={{ background: 'var(--bg-primary)' }}>
+      {/* 8. Reader Testimonials with Locked Heights */}
+      <section className="py-[120px]" style={{ background: 'var(--bg-primary)' }}>
         <div className="container-main">
           <SectionHeader
-            badge="Reader Stories"
+            badge="Reader Integrity"
             icon={Star}
-            title="What Our Readers Say"
-            subtitle="Real reviews from real book lovers across India."
+            title="What Express Members Say"
+            subtitle="100% verified customer feedbacks from elite readers, founders, developers, and collectors across Mumbai, Bangalore, Chennai, and Delhi."
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {testimonials.map((t, i) => (
               <motion.div
                 key={t.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="glass-card p-6 flex flex-col justify-between h-full min-h-[220px]"
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="glass-card p-6 flex flex-col justify-between border border-white/5 h-[230px]"
               >
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <img src={t.avatar} alt={t.name}
-                      className="w-12 h-12 rounded-full object-cover border-2"
-                      style={{ borderColor: 'rgba(108,59,213,0.3)' }} />
-                    <div>
-                      <div className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{t.name}</div>
-                      <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{t.location}</div>
+                  {/* Top user profile line */}
+                  <div className="flex items-center gap-3">
+                    <img src={t.avatar} alt=""
+                      className="w-10 h-10 rounded-full object-cover border border-white/10"
+                      onError={e => { e.target.src = `https://i.pravatar.cc/80?img=${t.id * 10}`; }} />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-extrabold text-xs text-slate-100 truncate" style={{ color: 'var(--text-primary)' }}>{t.name}</p>
+                      <p className="text-[9px] text-slate-400 font-bold truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{t.location}</p>
                     </div>
                     {t.verified && (
-                      <span className="ml-auto badge badge-green text-[10px] font-bold">✓ Verified</span>
+                      <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">✓ COD Order</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 mb-3">
-                    {[1,2,3,4,5].map(s => (
-                      <Star key={s} size={12} fill={s <= t.rating ? '#f59e0b' : 'none'}
-                        style={{ color: s <= t.rating ? '#f59e0b' : 'var(--text-secondary)' }} />
+                  {/* Ratings */}
+                  <div className="flex items-center gap-0.5 mt-4">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <Star key={s} size={11} fill={s <= t.rating ? '#fbbf24' : 'none'}
+                        style={{ color: s <= t.rating ? '#fbbf24' : 'var(--border-color)' }} />
                     ))}
                   </div>
-                  <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text-secondary)' }}>"{t.text}"</p>
                 </div>
+
+                {/* Text quote - auto clamp to prevent breaks */}
+                <p className="text-[11.5px] leading-relaxed italic text-slate-300 font-medium line-clamp-4 mt-2" style={{ color: 'var(--text-secondary)' }}>
+                  "{t.text}"
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA Banner */}
-      <section className="py-20" style={{ background: 'var(--bg-secondary)' }}>
+      {/* 9. Final CTA Overhaul */}
+      <section className="py-[100px]" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container-main">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="text-center glass-card p-12 md:p-16 relative overflow-hidden"
+            className="text-center glass-card p-12 md:p-16 relative overflow-hidden border border-indigo-500/10"
+            style={{
+              boxShadow: 'var(--shadow-lux)',
+            }}
           >
             <div className="absolute inset-0 pointer-events-none"
-              style={{ background: 'linear-gradient(135deg, rgba(108,59,213,0.1), rgba(236,72,153,0.05))' }} />
-            <div className="relative z-10">
-              <h2 className="section-title mb-4" style={{ color: 'var(--text-primary)' }}>
-                Your Next Adventure Awaits
+              style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(236,72,153,0.04) 100%)' }} />
+            
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <h2 className="font-extrabold tracking-tight leading-tight text-slate-100 mb-4" 
+                  style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(2rem, 3.5vw, 2.75rem)' }}>
+                Elevate Your Personal Library Today
               </h2>
-              <p className="text-lg mb-8 max-w-lg mx-auto" style={{ color: 'var(--text-secondary)' }}>
-                Join millions of readers. Get exclusive deals, early access to new releases, 
-                and personalized recommendations.
+              <p className="text-sm sm:text-base leading-relaxed text-slate-300 mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Access premium paperbacks and rare collection items delivered securely to your doorstep anywhere in India. Pure cash on delivery. Zero advance fees.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link to="/products">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    className="btn-primary text-base px-8 py-4"
+                    className="btn-lux text-base px-8 py-4"
                   >
-                    <span>Start Shopping →</span>
+                    <span>Begin Browsing →</span>
                   </motion.button>
                 </Link>
-                <Link to="/auth">
+                <Link to="/contact">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    className="btn-secondary text-base px-8 py-4"
+                    className="btn-lux-secondary text-base px-8 py-4"
                   >
-                    Create Free Account
+                    <span>Connect with Support</span>
                   </motion.button>
                 </Link>
               </div>
@@ -422,6 +447,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
     </div>
   );
 }
