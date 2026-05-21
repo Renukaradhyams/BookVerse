@@ -77,12 +77,12 @@ export default function BookCard({ book, index = 0 }) {
 
           {/* Overlay on hover */}
           <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300"
-            style={{ background: 'rgba(0,0,0,0.7)' }}>
+            style={{ background: 'rgba(0,0,0,0.65)' }}>
             <Link to={`/product/${book.id}`}>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/20"
+                className="w-10 h-10 rounded-xl flex items-center justify-center bg-black/40 border border-white/10 transition-colors hover:bg-black/60"
                 title="Quick View"
               >
                 <Eye size={18} className="text-white" />
@@ -92,9 +92,9 @@ export default function BookCard({ book, index = 0 }) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => toggleWishlist(book)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20 transition-colors"
+              className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10 transition-colors"
               style={{
-                background: inWishlist ? 'rgba(236,72,153,0.3)' : 'rgba(255,255,255,0.1)',
+                background: inWishlist ? 'rgba(236,72,153,0.4)' : 'rgba(0,0,0,0.4)',
                 title: "Wishlist"
               }}
             >
@@ -106,23 +106,23 @@ export default function BookCard({ book, index = 0 }) {
         {/* Card Content */}
         <div className="p-4 flex flex-col gap-2 flex-1">
           {/* Genre */}
-          <span className="text-xs font-medium" style={{ color: '#a78bfa' }}>{book.genre}</span>
+          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a78bfa' }}>{book.genre}</span>
 
           {/* Title & Author */}
           <Link to={`/product/${book.id}`}>
             <h3
-              className="font-semibold leading-snug line-clamp-2 transition-colors duration-200 group-hover:text-purple-400"
+              className="font-bold leading-snug line-clamp-2 transition-colors duration-200 hover:text-purple-400"
               style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}
             >
               {book.title}
             </h3>
           </Link>
-          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>by {book.author}</p>
+          <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>by {book.author}</p>
 
           {/* Rating */}
           <div className="flex items-center gap-2">
             <StarRating rating={book.rating} />
-            <span className="text-xs font-semibold" style={{ color: '#f59e0b' }}>{book.rating}</span>
+            <span className="text-xs font-bold" style={{ color: '#f59e0b' }}>{book.rating}</span>
             <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>({book.reviews.toLocaleString()})</span>
           </div>
 
@@ -130,14 +130,16 @@ export default function BookCard({ book, index = 0 }) {
           <div className="flex items-center gap-2 mt-auto">
             <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>₹{book.price}</span>
             <span className="text-sm line-through" style={{ color: 'var(--text-secondary)' }}>₹{book.mrp}</span>
-            <span className="text-xs font-semibold" style={{ color: '#4ade80' }}>
+            <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ color: '#22c55e', background: 'rgba(34,197,94,0.1)' }}>
               Save ₹{book.mrp - book.price}
             </span>
           </div>
 
           {/* Free delivery tag */}
-          {book.price >= 499 && (
-            <p className="text-xs font-medium" style={{ color: '#4ade80' }}>✓ Free Delivery</p>
+          {book.price >= 499 ? (
+            <p className="text-xs font-semibold" style={{ color: '#22c55e' }}>✓ Free Delivery</p>
+          ) : (
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>+ ₹49 Delivery</p>
           )}
 
           {/* Buttons */}
@@ -146,11 +148,11 @@ export default function BookCard({ book, index = 0 }) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => addToCart(book)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-sm cursor-pointer"
               style={{
-                background: inCart ? 'rgba(108,59,213,0.3)' : 'linear-gradient(135deg, #6c3bd5, #8b5cf6)',
-                color: 'white',
-                border: inCart ? '1px solid rgba(108,59,213,0.5)' : 'none',
+                background: inCart ? 'rgba(108,59,213,0.15)' : 'linear-gradient(135deg, #6c3bd5, #8b5cf6)',
+                color: inCart ? 'var(--accent-purple)' : 'white',
+                border: inCart ? '1.5px solid var(--accent-purple)' : 'none',
               }}
             >
               <ShoppingCart size={14} />
@@ -160,10 +162,10 @@ export default function BookCard({ book, index = 0 }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleWishlist(book)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0"
+              className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 border cursor-pointer"
               style={{
-                background: inWishlist ? 'rgba(236,72,153,0.2)' : 'var(--glass-bg)',
-                border: `1px solid ${inWishlist ? 'rgba(236,72,153,0.4)' : 'var(--glass-border)'}`,
+                background: inWishlist ? 'rgba(236,72,153,0.1)' : 'var(--bg-secondary)',
+                borderColor: inWishlist ? 'rgba(236,72,153,0.3)' : 'var(--border-color)',
               }}
             >
               <Heart size={16} fill={inWishlist ? '#ec4899' : 'none'}

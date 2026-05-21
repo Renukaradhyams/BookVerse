@@ -106,7 +106,7 @@ export default function ProductDetail() {
                   key={i}
                   onClick={() => setSelectedImage(i)}
                   className="w-20 h-28 rounded-xl overflow-hidden border-2 transition-all"
-                  style={{ borderColor: selectedImage === i ? '#6c3bd5' : 'var(--glass-border)' }}
+                  style={{ borderColor: selectedImage === i ? '#6c3bd5' : 'var(--border-color)' }}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover"
                     onError={e => { e.target.src = 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=80&h=112&fit=crop'; }} />
@@ -224,10 +224,10 @@ export default function ProductDetail() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => toggleWishlist(book)}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 btn-secondary"
                   style={{
-                    background: inWishlist ? 'rgba(236,72,153,0.2)' : 'var(--glass-bg)',
-                    border: `1px solid ${inWishlist ? 'rgba(236,72,153,0.4)' : 'var(--glass-border)'}`,
+                    background: inWishlist ? 'rgba(236,72,153,0.2)' : 'var(--bg-secondary)',
+                    border: `1px solid ${inWishlist ? 'rgba(236,72,153,0.4)' : 'var(--border-color)'}`,
                   }}
                 >
                   <Heart size={20} fill={inWishlist ? '#ec4899' : 'none'}
@@ -326,7 +326,7 @@ export default function ProductDetail() {
                         {[5,4,3,2,1].map(stars => (
                           <div key={stars} className="flex items-center gap-3">
                             <span className="text-sm w-6" style={{ color: 'var(--text-secondary)' }}>{stars}★</span>
-                            <div className="flex-1 rounded-full h-2" style={{ background: 'var(--glass-bg)' }}>
+                            <div className="flex-1 rounded-full h-2" style={{ background: 'var(--bg-primary)' }}>
                               <div className="h-full rounded-full" style={{
                                 width: `${[72, 18, 7, 2, 1][5 - stars]}%`,
                                 background: 'linear-gradient(90deg, #f59e0b, #f97316)'

@@ -246,7 +246,7 @@ export default function CartPage() {
                 )}
               </div>
 
-              <div className="pt-4 mb-5" style={{ borderTop: '1px solid var(--glass-border)' }}>
+              <div className="pt-4 mb-5" style={{ borderTop: '1px solid var(--border-color)' }}>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>Total</span>
                   <div className="text-right">
@@ -276,7 +276,7 @@ export default function CartPage() {
               </Link>
 
               {/* Guarantees */}
-              <div className="mt-5 pt-5 space-y-2" style={{ borderTop: '1px solid var(--glass-border)' }}>
+              <div className="mt-5 pt-5 space-y-2" style={{ borderTop: '1px solid var(--border-color)' }}>
                 {[
                   { icon: Shield, text: '100% Secure Checkout' },
                   { icon: Package, text: 'Easy 7-day Returns' },

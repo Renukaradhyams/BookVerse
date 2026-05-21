@@ -156,25 +156,25 @@ export default function Checkout() {
         </div>
 
         {/* Step Progress */}
-        <div className="flex items-center gap-0 mb-10 glass-card p-4">
+        <div className="flex items-center gap-0 mb-10 glass-card p-4 border" style={{ borderColor: 'var(--border-color)' }}>
           {steps.map((s, i) => (
             <div key={s} className="flex items-center flex-1">
               <div className="flex flex-col items-center">
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300"
                   style={{
-                    background: i < step ? '#22c55e' : i === step ? 'linear-gradient(135deg, #6c3bd5, #8b5cf6)' : 'var(--glass-bg)',
+                    background: i < step ? '#22c55e' : i === step ? 'linear-gradient(135deg, #6c3bd5, #8b5cf6)' : 'var(--bg-primary)',
                     color: i <= step ? 'white' : 'var(--text-secondary)',
-                    border: i > step ? '1px solid var(--glass-border)' : 'none',
+                    border: i > step ? '1.5px solid var(--border-color)' : 'none',
                   }}
                 >
                   {i < step ? <CheckCircle size={16} /> : i + 1}
                 </div>
-                <span className="text-xs mt-1 font-medium" style={{ color: i === step ? '#a78bfa' : 'var(--text-secondary)' }}>{s}</span>
+                <span className="text-xs mt-1 font-bold" style={{ color: i === step ? 'var(--accent-purple)' : 'var(--text-secondary)' }}>{s}</span>
               </div>
               {i < steps.length - 1 && (
-                <div className="flex-1 h-0.5 mx-2 rounded-full"
-                  style={{ background: i < step ? '#22c55e' : 'var(--glass-bg)' }} />
+                <div className="flex-1 h-0.5 mx-2 rounded-full animate-pulse"
+                  style={{ background: i < step ? '#22c55e' : 'var(--border-color)' }} />
               )}
             </div>
           ))}
@@ -417,8 +417,8 @@ export default function Checkout() {
                   </div>
                 )}
               </div>
-              <div className="flex justify-between items-center pt-3 mb-4"
-                style={{ borderTop: '1px solid var(--glass-border)' }}>
+              <div className="flex justify-between items-center pt-3 mb-4 font-semibold"
+                style={{ borderTop: '1px solid var(--border-color)' }}>
                 <span className="font-bold" style={{ color: 'var(--text-primary)' }}>Total</span>
                 <span className="text-xl font-bold gradient-text-gold">₹{total}</span>
               </div>

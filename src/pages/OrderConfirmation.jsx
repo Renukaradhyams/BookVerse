@@ -234,15 +234,15 @@ export default function OrderConfirmation() {
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{
-                        background: step.done ? 'rgba(34,197,94,0.2)' : 'var(--glass-bg)',
-                        border: `1px solid ${step.done ? 'rgba(34,197,94,0.4)' : 'var(--glass-border)'}`,
+                        background: step.done ? 'rgba(34,197,94,0.2)' : 'var(--bg-primary)',
+                        border: `1px solid ${step.done ? 'rgba(34,197,94,0.4)' : 'var(--border-color)'}`,
                       }}
                     >
                       <Icon size={18} style={{ color: step.done ? '#4ade80' : 'var(--text-secondary)' }} />
                     </div>
                     {i < trackingSteps.length - 1 && (
                       <div className="absolute left-1/2 -translate-x-1/2 top-10 w-0.5 h-4"
-                        style={{ background: step.done ? '#4ade80' : 'var(--glass-border)' }} />
+                        style={{ background: step.done ? '#4ade80' : 'var(--border-color)' }} />
                     )}
                   </div>
                   <div className="pb-4">
@@ -315,8 +315,8 @@ export default function OrderConfirmation() {
                 navigator.share({ title: 'BookVerse Order', text: `I just ordered books from BookVerse India! Order: ${orderId}` });
               }
             }}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm"
-            style={{ background: 'var(--glass-bg)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)' }}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm btn-secondary"
+            style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
           >
             <Share2 size={16} />
             Share

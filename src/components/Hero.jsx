@@ -268,27 +268,26 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative flex items-center justify-center"
-            style={{ height: '500px' }}
+            className="relative flex items-center justify-center h-[450px] md:h-[500px] w-full overflow-visible"
           >
             {/* Glow circle behind books */}
             <div
-              className="absolute rounded-full"
+              className="absolute rounded-full pointer-events-none"
               style={{
-                width: '350px', height: '350px',
-                background: 'radial-gradient(circle, rgba(108,59,213,0.3), rgba(245,158,11,0.1), transparent 70%)',
+                width: '320px', height: '320px',
+                background: 'radial-gradient(circle, rgba(108,59,213,0.25), rgba(245,158,11,0.08), transparent 70%)',
                 animation: 'pulseGlow 3s ease-in-out infinite',
-                filter: 'blur(2px)',
+                filter: 'blur(10px)',
               }}
             />
 
-            {/* Books */}
-            <div className="relative flex items-center justify-center" style={{ width: '340px', height: '340px' }}>
+            {/* Books Container */}
+            <div className="relative flex items-center justify-center w-[300px] sm:w-[340px] h-[340px]">
               {bookCovers.map((book, i) => (
                 <div key={i}
-                  className="absolute"
+                  className="absolute transition-all duration-300"
                   style={{
-                    left: `${50 + (i - 1) * 35}%`,
+                    left: `${50 + (i - 1) * 30}%`,
                     top: '50%',
                     transform: `translate(-50%, -50%) rotate(${book.angle}deg) scale(${book.scale})`,
                     zIndex: i === 1 ? 3 : 1,
@@ -296,11 +295,12 @@ export default function Hero() {
                   }}
                 >
                   <div
-                    className="rounded-2xl overflow-hidden"
+                    className="rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-105"
                     style={{
-                      width: i === 1 ? '150px' : '120px',
-                      height: i === 1 ? '210px' : '168px',
-                      boxShadow: `0 30px 80px ${book.color}50, 0 0 0 1px ${book.color}20`,
+                      width: i === 1 ? '140px' : '110px',
+                      height: i === 1 ? '200px' : '156px',
+                      boxShadow: `0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px ${book.color}30`,
+                      background: 'var(--bg-card)'
                     }}
                   >
                     <img
@@ -314,18 +314,22 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* Floating badges */}
+            {/* Floating badges - Solid, premium e-commerce style */}
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-12 right-8 glass-card p-3"
-              style={{ border: '1px solid rgba(245,158,11,0.3)' }}
+              className="absolute top-8 right-4 p-3.5 rounded-xl shadow-lg border"
+              style={{
+                background: 'var(--bg-secondary)',
+                borderColor: 'var(--border-color)',
+                minWidth: '140px'
+              }}
             >
               <div className="flex items-center gap-2">
-                <Star size={14} fill="#f59e0b" style={{ color: '#f59e0b' }} />
+                <Star size={15} fill="#f59e0b" style={{ color: '#f59e0b' }} />
                 <div>
-                  <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Bestseller</p>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Atomic Habits</p>
+                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Bestseller</p>
+                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>Atomic Habits</p>
                 </div>
               </div>
             </motion.div>
@@ -333,14 +337,18 @@ export default function Hero() {
             <motion.div
               animate={{ y: [0, 10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute bottom-16 left-6 glass-card p-3"
-              style={{ border: '1px solid rgba(108,59,213,0.3)' }}
+              className="absolute bottom-8 left-4 p-3.5 rounded-xl shadow-lg border"
+              style={{
+                background: 'var(--bg-secondary)',
+                borderColor: 'var(--border-color)',
+                minWidth: '150px'
+              }}
             >
               <div className="flex items-center gap-2">
-                <span className="text-lg">🚀</span>
+                <span className="text-base">🚀</span>
                 <div>
-                  <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Fast Delivery</p>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>2-4 Business Days</p>
+                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Fast Delivery</p>
+                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>2-4 Days Metro</p>
                 </div>
               </div>
             </motion.div>
@@ -348,14 +356,18 @@ export default function Hero() {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              className="absolute top-1/2 -right-4 glass-card p-3"
-              style={{ border: '1px solid rgba(236,72,153,0.3)' }}
+              className="absolute top-1/2 -right-2 p-3.5 rounded-xl shadow-lg border"
+              style={{
+                background: 'var(--bg-secondary)',
+                borderColor: 'var(--border-color)',
+                minWidth: '130px'
+              }}
             >
               <div className="flex items-center gap-2">
-                <span className="text-lg">💰</span>
+                <span className="text-base">💰</span>
                 <div>
-                  <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Save upto 43%</p>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Best Prices</p>
+                  <p className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>Save up to 43%</p>
+                  <p className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>Best Price Guarantee</p>
                 </div>
               </div>
             </motion.div>

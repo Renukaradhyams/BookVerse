@@ -6,7 +6,10 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { ChevronLeft, ChevronRight, TrendingUp, Sparkles, Crown, Zap, Star } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, TrendingUp, Sparkles, Crown, Zap, Star,
+  Brain, IndianRupee, Laptop, BookOpen, History, Atom, Award
+} from 'lucide-react';
 import BookCard from "../components/BookCard";
 import { books, categories, testimonials, stats } from "../data/books";
 import Hero from "../components/Hero";
@@ -61,16 +64,15 @@ export default function Home() {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const categoryIcons = ['📚', '🧠', '💰', '💻', '✨', '📈', '🌍', '🎭'];
   const categoryData = [
-    { name: 'Self-Help', count: 45, color: '#6c3bd5', to: '/products?category=self-help' },
-    { name: 'Finance', count: 32, color: '#f59e0b', to: '/products?category=finance' },
-    { name: 'Technology', count: 58, color: '#3b82f6', to: '/products?category=technology' },
-    { name: 'Fiction', count: 124, color: '#ec4899', to: '/products?category=fiction' },
-    { name: 'Business', count: 41, color: '#10b981', to: '/products?category=business' },
-    { name: 'History', count: 29, color: '#f97316', to: '/products?category=non-fiction' },
-    { name: 'Science', count: 36, color: '#06b6d4', to: '/products?category=technology' },
-    { name: 'Biography', count: 22, color: '#8b5cf6', to: '/products?category=non-fiction' },
+    { name: 'Self-Help', count: 45, color: '#6c3bd5', to: '/products?category=self-help', icon: Brain },
+    { name: 'Finance', count: 32, color: '#f59e0b', to: '/products?category=finance', icon: IndianRupee },
+    { name: 'Technology', count: 58, color: '#3b82f6', to: '/products?category=technology', icon: Laptop },
+    { name: 'Fiction', count: 124, color: '#ec4899', to: '/products?category=fiction', icon: BookOpen },
+    { name: 'Business', count: 41, color: '#10b981', to: '/products?category=business', icon: TrendingUp },
+    { name: 'History', count: 29, color: '#f97316', to: '/products?category=non-fiction', icon: History },
+    { name: 'Science', count: 36, color: '#06b6d4', to: '/products?category=technology', icon: Atom },
+    { name: 'Biography', count: 22, color: '#8b5cf6', to: '/products?category=non-fiction', icon: Award },
   ];
 
   return (
@@ -127,12 +129,12 @@ export default function Home() {
             {/* Custom Nav Buttons */}
             <button ref={prevRef}
               className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 glass rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ border: '1px solid var(--glass-border)' }}>
+              style={{ border: '1px solid var(--border-color)' }}>
               <ChevronLeft size={18} style={{ color: 'var(--text-primary)' }} />
             </button>
             <button ref={nextRef}
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 glass rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ border: '1px solid var(--glass-border)' }}>
+              style={{ border: '1px solid var(--border-color)' }}>
               <ChevronRight size={18} style={{ color: 'var(--text-primary)' }} />
             </button>
           </div>
@@ -159,21 +161,23 @@ export default function Home() {
               >
                 <Link to={cat.to}>
                   <div
-                    className="group glass-card p-6 text-center cursor-pointer relative overflow-hidden"
+                    className="group glass-card p-6 text-center cursor-pointer relative overflow-hidden h-full flex flex-col justify-between"
                     style={{ border: `1px solid ${cat.color}20` }}
                   >
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{ background: `linear-gradient(135deg, ${cat.color}10, transparent)` }}
                     />
-                    <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl transition-transform group-hover:scale-110 duration-300"
-                      style={{ background: `${cat.color}15`, border: `1px solid ${cat.color}30` }}
-                    >
-                      {categoryIcons[i]}
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl transition-transform group-hover:scale-110 duration-300"
+                        style={{ background: `${cat.color}15`, border: `1px solid ${cat.color}30` }}
+                      >
+                        <cat.icon size={22} style={{ color: cat.color }} />
+                      </div>
+                      <h3 className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
+                      <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{cat.count}+ Books</p>
                     </div>
-                    <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
-                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{cat.count}+ Books</p>
                     <div
                       className="absolute bottom-0 inset-x-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{ background: `linear-gradient(90deg, transparent, ${cat.color}, transparent)` }}
@@ -346,27 +350,29 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card p-6"
+                className="glass-card p-6 flex flex-col justify-between h-full min-h-[220px]"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <img src={t.avatar} alt={t.name}
-                    className="w-12 h-12 rounded-full object-cover border-2"
-                    style={{ borderColor: 'rgba(108,59,213,0.3)' }} />
-                  <div>
-                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t.name}</div>
-                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>{t.location}</div>
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <img src={t.avatar} alt={t.name}
+                      className="w-12 h-12 rounded-full object-cover border-2"
+                      style={{ borderColor: 'rgba(108,59,213,0.3)' }} />
+                    <div>
+                      <div className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{t.name}</div>
+                      <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{t.location}</div>
+                    </div>
+                    {t.verified && (
+                      <span className="ml-auto badge badge-green text-[10px] font-bold">✓ Verified</span>
+                    )}
                   </div>
-                  {t.verified && (
-                    <span className="ml-auto badge badge-green text-xs" style={{ fontSize: '0.65rem' }}>✓ Verified</span>
-                  )}
+                  <div className="flex items-center gap-1 mb-3">
+                    {[1,2,3,4,5].map(s => (
+                      <Star key={s} size={12} fill={s <= t.rating ? '#f59e0b' : 'none'}
+                        style={{ color: s <= t.rating ? '#f59e0b' : 'var(--text-secondary)' }} />
+                    ))}
+                  </div>
+                  <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text-secondary)' }}>"{t.text}"</p>
                 </div>
-                <div className="flex items-center gap-1 mb-3">
-                  {[1,2,3,4,5].map(s => (
-                    <Star key={s} size={12} fill={s <= t.rating ? '#f59e0b' : 'none'}
-                      style={{ color: s <= t.rating ? '#f59e0b' : 'var(--text-secondary)' }} />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>"{t.text}"</p>
               </motion.div>
             ))}
           </div>
