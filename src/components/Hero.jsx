@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Sparkles, ArrowRight, Star, TrendingUp, BookOpen, Truck, ShieldCheck, Percent } from 'lucide-react';
+import { Sparkles, ArrowRight, Star, TrendingUp, BookOpen, Truck, ShieldCheck, Percent, Compass } from 'lucide-react';
 
 function ParticleSystem() {
   return (
