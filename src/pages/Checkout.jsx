@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Truck, CheckCircle, ChevronRight, ArrowLeft, Lock, Package,
-  User, Mail, Phone, Home, ShieldCheck, CreditCard, Sparkles
+  User, Mail, Phone, Home, ShieldCheck, CreditCard, Sparkles, Compass, Globe
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
@@ -661,6 +661,4 @@ export default function Checkout() {
   );
 }
 
-// Quick fallback helper
-const Compass = MapPin;
-const Globe = MapPin;
+

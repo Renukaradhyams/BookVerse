@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, BookOpen, Mail, Lock, User, ArrowRight, CheckCircle, ShieldCheck, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -291,7 +291,4 @@ export default function Auth() {
   );
 }
 
-// Quick Fallback Link helper since standard routing link was imported
-const Link = ({ to, children, ...props }) => {
-  return <a href={to} {...props}>{children}</a>;
-};
+
